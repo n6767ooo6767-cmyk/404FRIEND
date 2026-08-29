@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404FRIEND</title>
+    <meta name="description" content="404FRIEND — твой AI-друг.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="header">
+        <a href="/" class="logo">404FRIEND</a>
+
+        <nav class="nav">
+            <a href="#chat">Чат</a>
+            <a href="#pricing">Тарифы</a>
+            <a href="#about">О нас</a>
+        </nav>
+
+        <button class="login-btn">Войти</button>
+    </header>
+
+    <main>
+
+        <section class="hero">
+            <div class="hero-content">
+                <p class="badge">⚡️ 404FRIEND AI</p>
+
+                <h1>
+                    Твой новый
+                    <span>AI-друг.</span>
+                </h1>
+
+                <p class="hero-text">
+                    Общайся, спрашивай, придумывай и просто убивай время.
+                    404FRIEND всегда на связи.
+                </p>
+
+                <div class="hero-buttons">
+                    <a href="#chat" class="primary-btn">Начать чат</a>
+                    <a href="#pricing" class="secondary-btn">Тарифы</a>
+                </div>
+            </div>
+        </section>
+
+        <section id="chat" class="chat-section">
+            <div class="section-heading">
+                <p class="badge">💬 CHAT</p>
+                <h2>404FRIEND ждёт тебя.</h2>
+                <p>Напиши что-нибудь, чтобы начать разговор.</p>
+            </div>
+
+            <div class="chat-box">
+
+                <div id="messages" class="messages">
+                    <div class="message ai-message">
+                        <div class="message-name">404FRIEND</div>
+                        <div class="message-text">
+                            Йо 👋 Я 404FRIEND. Ну чё, о чём поговорим?
+                        </div>
+                    </div>
+                </div>
+
+                <form id="chat-form" class="chat-form">
+                    <input
+                        id="message-input"
+                        type="text"
+                        placeholder="Напиши сообщение..."
+                        autocomplete="off"
+                        maxlength="4000"
+                    >
+
+                    <button type="submit">➤</button>
+                </form>
+
+                <div class="usage">
+                    <span id="plan-name">Free</span>
+                    <span id="usage-count">0 / 50 сообщений</span>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="pricing" class="pricing-section">
+
+            <div class="section-heading">
+                <p class="badge">👑 PLANS</p>
+                <h2>Выбирай свой тариф.</h2>
+                <p>Лимит рассчитывается за каждые 24 часа.</p>
+            </div>
+
+            <div class="pricing-grid">
+
+                <article class="pricing-card">
+                    <h3>Free</h3>
+                    <p class="price">0 zł</p>
+                    <p class="period">навсегда</p>
+
+                    <ul>
+                        <li>✓ 50 сообщений / 24 ч</li>
+                        <li>✓ Доступ к 404FRIEND</li>
+                        <li>✓ Без подписки</li>
+                    </ul>
+
+                    <button class="plan-btn">Текущий план</button>
+                </article>
+
+                <article class="pricing-card featured">
+                    <div class="popular">ПОПУЛЯРНЫЙ</div>
+
+                    <h3>Pro</h3>
+                    <p class="price">19.99 zł</p>
+                    <p class="period">за 24 часа</p>
+
+                    <ul>
+                        <li>✓ 150 сообщений / 24 ч</li>
+                        <li>✓ Доступ к 404FRIEND</li>
+                        <li>✓ Возможность купить Extra</li>
+                    </ul>
+
+                    <button class="plan-btn primary-btn">Получить Pro</button>
+                </article>
+
+                <article class="pricing-card">
+                    <h3>Extra</h3>
+                    <p class="price">Доп. сообщения</p>
+                    <p class="period">к текущему лимиту</p>
+
+                    <ul>
+                        <li>✓ Extra 1: +50 сообщений</li>
+                        <li>✓ Extra 2: +100 сообщений</li>
+                        <li>✓ Работает с Free и Pro</li>
+                    </ul>
+
+                    <div class="extra-buttons">
+                        <button class="plan-btn">Extra 1</button>
+                        <button class="plan-btn">Extra 2</button>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <section id="about" class="about-section">
+            <p class="badge">🖤 404KIDYT</p>
+
+            <h2>404FRIEND</h2>
+
+            <p>
+                AI-проект от 404KidYT.
+            </p>
+
+            <div class="socials">
+                <span>YouTube: @404KidYT</span>
+                <span>ТТ: @404kidyt</span>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer">
+        <p>© 2026 404FRIEND</p>
+        <p>404KidYT</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
