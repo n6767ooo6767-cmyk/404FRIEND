@@ -1,200 +1,108 @@
-const chatForm = document.getElementById("chat-form");
-const messageInput = document.getElementById("message-input");
-const messages = document.getElementById("messages");
-const usageCount = document.getElementById("usage-count");
-const planName = document.getElementById("plan-name");
+const userId =
+    localStorage.getItem("404friend_user_id") ||
+    crypto.randomUUID();
 
-const API_URL = "/api/chat";
+localStorage.setItem("404friend_user_id", userId);
 
-let state = {
-    plan: "Free",
-    baseLimit: 50,
-    extraMessages: 0,
-    usedMessages: 0
-};
 
-function getTotalLimit() {
-    return state.baseLimit + state.extraMessages;
-}
+let currentPlan =
+    localStorage.getItem("404friend_plan") || "free";
 
-function updateUsage() {
-    const totalLimit = getTotalLimit();
 
-    planName.textContent = state.plan;
-    usageCount.textContent =
-        `${state.usedMessages} / ${totalLimit} сообщений`;
-}
-
-function addMessage(text, type) {
-    const message = document.createElement("div");
-
-    message.className =
-        type === "user"
-            ? "message user-message"
-            : "message ai-message";
-
-    const name = document.createElement("div");
-    name.className = "message-name";
-    name.textContent =
-        type === "user" ? "Ты" : "404FRIEND";
-
-    const content = document.createElement("div");
-    content.className = "message-text";
-    content.textContent = text;
-
-    message.appendChild(name);
-    message.appendChild(content);
-
-    messages.appendChild(message);
-    messages.scrollTop = messages.scrollHeight;
-}
-
-function setLoading(loading) {
-    messageInput.disabled = loading;
-
-    const button = chatForm.querySelector("button");
-    button.disabled = loading;
-
-    if (loading) {
-        button.textContent = "…";
-    } else {
-        button.textContent = "➤";
-    }
-}
-
-async function sendMessage(message) {
-    const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        credentials: "include",
-        body: JSON.stringify({
-            message
-        })
+function showPage(page) {
+    document.querySelectorAll(".page").forEach(section => {
+        section.style.display = "none";
     });
 
-    const data = await response.json();
+    const selected = document.getElementById(page);
 
-    if (!response.ok) {
-        throw new Error(
-            data.error || "Не удалось получить ответ."
-        );
+    if (selected) {
+        selected.style.display = "block";
     }
-
-    return data;
 }
 
-chatForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
 
-    const message = messageInput.value.trim();
+function route() {
+    const path = window.location.pathname;
 
-    if (!message) {
-        return;
+    if (path === "/login") {
+        showPage("login");
+    } else if (path === "/pricing") {
+        showPage("pricing");
+    } else {
+        showPage("home");
     }
+}
 
-    messageInput.value = "";
-    addMessage(message, "user");
 
-    setLoading(true);
+function updateLimit(used, limit) {
+    const element = document.getElementById("usage");
 
-    try {
-        const data = await sendMessage(message);
-
-        if (data.reply) {
-            addMessage(data.reply, "ai");
-        }
-
-        if (typeof data.usedMessages === "number") {
-            state.usedMessages = data.usedMessages;
-        }
-
-        if (typeof data.baseLimit === "number") {
-            state.baseLimit = data.baseLimit;
-        }
-
-        if (typeof data.extraMessages === "number") {
-            state.extraMessages = data.extraMessages;
-        }
-
-        if (data.plan) {
-            state.plan = data.plan;
-        }
-
-        updateUsage();
-
-    } catch (error) {
-        addMessage(
-            error.message || "Что-то пошло не так.",
-            "ai"
-        );
-    } finally {
-        setLoading(false);
-        messageInput.focus();
+    if (element) {
+        element.textContent = `${used} / ${limit} сообщений`;
     }
-});
+}
+
 
 async function loadUsage() {
     try {
-        const response = await fetch("/api/usage", {
-            credentials: "include"
-        });
-
-        if (!response.ok) {
-            return;
-        }
+        const response = await fetch(
+            `/api/usage?user_id=${encodeURIComponent(userId)}&plan=${encodeURIComponent(currentPlan)}`
+        );
 
         const data = await response.json();
 
-        if (data.plan) {
-            state.plan = data.plan;
-        }
+        updateLimit(data.used, data.limit);
 
-        if (typeof data.baseLimit === "number") {
-            state.baseLimit = data.baseLimit;
-        }
-
-        if (typeof data.extraMessages === "number") {
-            state.extraMessages = data.extraMessages;
-        }
-
-        if (typeof data.usedMessages === "number") {
-            state.usedMessages = data.usedMessages;
-        }
-
-        updateUsage();
-
-    } catch {
-        updateUsage();
+    } catch (error) {
+        console.error("Usage error:", error);
     }
 }
 
-document.querySelector(".login-btn")?.addEventListener(
-    "click",
-    () => {
-        window.location.href = "/login";
+
+async function sendMessage(message) {
+    if (!message.trim()) {
+        return;
     }
-);
 
-document.querySelectorAll(".plan-btn").forEach((button) => {
-    button.addEventListener("click", () => {
-        const text = button.textContent.trim();
+    try {
+        const response = await fetch("/api/chat", {
+            method: "POST",
 
-        if (text === "Получить Pro") {
-            window.location.href = "/pricing?plan=pro";
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                message: message,
+                user_id: userId,
+                plan: currentPlan
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error(data);
+
+            if (data.used !== undefined) {
+                updateLimit(data.used, data.limit);
+            }
+
             return;
         }
 
-        if (text === "Extra 1") {
-            window.location.href = "/pricing?plan=extra1";
-            return;
-        }
+        updateLimit(data.used, data.limit);
 
-        if (text === "Extra 2") {
-            window.location.href = "/pricing?plan=extra2";
-        }
-    });
+        return data.reply;
+
+    } catch (error) {
+        console.error("Chat error:", error);
+    }
+}
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    route();
+    loadUsage();
 });
-
-loadUsage();
